@@ -1,0 +1,19 @@
+sort Product = struct Coffee|HotWater|ColdWater;
+sort Supplement = struct Milk|Sugar;
+
+act
+  % User interface to controller.
+  pressed : Product;
+  pressed : Supplement;
+  cancel;
+
+  % Controller to user interface.
+  light : Product;
+  unlight : Product;
+  accept;
+proc
+  CoffeeSelect = pressed(Milk) + pressed(Sugar);
+  Select = (pressed(Coffee).CoffeeSelect + pressed(Coffee) + pressed(HotWater) + pressed(ColdWater)).accept;
+
+init
+  Select;
