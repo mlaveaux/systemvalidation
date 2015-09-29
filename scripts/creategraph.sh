@@ -7,6 +7,6 @@ if [ ! -e "${MCRL2_FILENAME}" ]; then
     echo "Requires a input <file>.mcrl2 argument"; exit;
 fi
 
-mcrl22lps ${MCRL2_FILENAME} ${LPS_FILENAME}
-lps2lts ${LPS_FILENAME} ${LTS_FILENAME}
+mcrl22lps ${MCRL2_FILENAME} ${LPS_FILENAME} &&
+lps2lts ${LPS_FILENAME} ${LTS_FILENAME} &&
 ltsgraph ${LTS_FILENAME}
