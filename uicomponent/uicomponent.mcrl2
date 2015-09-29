@@ -1,6 +1,14 @@
 sort Product = struct Coffee|HotWater|ColdWater;
 sort CoffeeSupplement = struct Milk|Sugar|CoffeeBeans;
 sort Extra = struct Cup;
+sort Value = struct tencent|fivecent|twentycent|fiftycent|oneeuro; 
+map value: Value -> Pos;
+var v:Value;
+eqn (v==tencent) -> value(v) = 10;
+	(v==fivecent) -> value(v) = 5;
+	(v==twentycent) -> value(v) = 20;
+	(v==fiftycent) -> value(v) = 50;
+	(v==oneeuro) -> value(v) = 100;
 
 act
   % User interface to controller.
@@ -19,7 +27,8 @@ act
   setEmpty : Extra # Bool;
 
   % Machine to controller.
-  coin : Int;
+  coin : Value;
+  return_last_coin : Value;
 
   % Controller to machine.
 
@@ -39,7 +48,8 @@ proc
 
   Continue = tau.Continue;
 
-  CountMoney(total : Nat) = if(total < 100) -> sum value : Nat.(coin(value).CountMoney(total + value) + cancel.UIComponent) <> Continue;
+  CountMoney(total : Int) = sum v:Value.(total < 100 && value(v)+total <= 100) -> (coin(v).CountMoney(total + value(v)) + cancel.UIComponent) <> 
+  (total < 100 && value(v)+total > 100) -> (coin(v).return_last_coin(v).CountMoney(total))<>Continue;
 
   UIComponent = Reset.ProductSelect;
 
