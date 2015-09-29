@@ -1,59 +1,60 @@
 sort Product = struct Coffee|HotWater|ColdWater;
 sort CoffeeSupplement = struct Milk|Sugar|CoffeeBeans;
 sort Extra = struct Cup;
-sort Value = struct tencent|fivecent|twentycent|fiftycent|oneeuro; 
-map value: Value -> Pos;
-var v:Value;
+
+sort Value = struct tencent|fivecent|twentycent|fiftycent|oneeuro|twoeuro; 
+map value : Value -> Pos;
+var v : Value;
 eqn (v==tencent) -> value(v) = 10;
-	(v==fivecent) -> value(v) = 5;
-	(v==twentycent) -> value(v) = 20;
-	(v==fiftycent) -> value(v) = 50;
-	(v==oneeuro) -> value(v) = 100;
+    (v==fivecent) -> value(v) = 5;
+    (v==twentycent) -> value(v) = 20;
+    (v==fiftycent) -> value(v) = 50;
+    (v==oneeuro) -> value(v) = 100;
+    (v==twoeuro) -> value(v) = 200;
 
 act
-  % User interface to controller.
-  pressed : Product;
-  pressed : CoffeeSupplement;
-  cancel;
+    % User interface to controller.
+    pressed : Product;
+    pressed : CoffeeSupplement;
+    cancel;
 
-  % Controller to user interface.
-  showMoney : Int;
+    % Controller to user interface.
+    show_money : Nat;
 
-  setSelectable : Product # Bool;
-  setSelectable : CoffeeSupplement # Bool;
+    set_selectable : Product # Bool;
+    set_selectable : CoffeeSupplement # Bool;
 
-  setEmpty : Product # Bool;
-  setEmpty : CoffeeSupplement # Bool;
-  setEmpty : Extra # Bool;
+    set_empty : Product # Bool;
+    set_empty : CoffeeSupplement # Bool;
+    set_empty : Extra # Bool;
 
-  % Machine to controller.
-  coin : Value;
-  return_last_coin : Value;
+    % Machine to controller.
+    coin : Value;
+    return_last_coin : Value;
 
-  % Controller to machine.
+    % Controller to machine.
 
-  % Actions between controller components.
-  accept;
+    % Actions between controller components.
 
 proc
-  CoffeeSelect = setSelectable(Milk, true).setSelectable(Sugar, true)
-	.setSelectable(Coffee, false).setSelectable(HotWater, false)
-	.setSelectable(ColdWater, false).(pressed(Milk) + pressed(Sugar) + tau);
+    CoffeeSelect = set_selectable(Milk, true).set_selectable(Sugar, true)
+        .set_selectable(Coffee, false).set_selectable(HotWater, false)
+        .set_selectable(ColdWater, false).(pressed(Milk) + pressed(Sugar) + tau);
 
-  Reset = setSelectable(Milk, false).setSelectable(Sugar, false)
-	.setSelectable(Coffee, true).setSelectable(HotWater, true)
-	.setSelectable(ColdWater, true);
+    Reset = set_selectable(Milk, false).set_selectable(Sugar, false)
+        .set_selectable(Coffee, true).set_selectable(HotWater, true)
+        .set_selectable(ColdWater, true);
 
-  ProductSelect = (pressed(Coffee).CoffeeSelect + pressed(HotWater) + pressed(ColdWater)).CountMoney(0);
+    ProductSelect = (pressed(Coffee).CoffeeSelect + pressed(HotWater) + pressed(ColdWater)).CountMoney(0);
 
-  Continue = tau.Continue;
+    Continue = tau.Continue;
 
-  CountMoney(total : Int) = sum v:Value.(total < 100 && value(v)+total <= 100) -> (coin(v).CountMoney(total + value(v)) + cancel.UIComponent) <> 
-  (total < 100 && value(v)+total > 100) -> (coin(v).return_last_coin(v).CountMoney(total))<>Continue;
+    CountMoney(total : Nat) = sum v:Value.(total < 100 && value(v)+total <= 100) -> (coin(v).CountMoney(total + value(v)) + cancel.UIComponent) <> 
+        (total < 100 && value(v)+total > 100) -> (coin(v).return_last_coin(v).CountMoney(total))<>Continue;
 
-  UIComponent = Reset.ProductSelect;
+    UIComponent = Reset.ProductSelect;
 
-  Start = UIComponent;
+    Start = UIComponent;
 
 init
   Start;
