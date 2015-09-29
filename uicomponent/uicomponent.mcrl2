@@ -1,19 +1,59 @@
 sort Product = struct Coffee|HotWater|ColdWater;
-sort Supplement = struct Milk|Sugar;
+sort CoffeeSupplement = struct Milk|Sugar|CoffeeBeans;
+sort Extra = struct Cup;
+sort Value = struct tencent|fivecent|twentycent|fiftycent|oneeuro; 
+map value: Value -> Pos;
+var v:Value;
+eqn (v==tencent) -> value(v) = 10;
+	(v==fivecent) -> value(v) = 5;
+	(v==twentycent) -> value(v) = 20;
+	(v==fiftycent) -> value(v) = 50;
+	(v==oneeuro) -> value(v) = 100;
 
 act
   % User interface to controller.
   pressed : Product;
-  pressed : Supplement;
+  pressed : CoffeeSupplement;
   cancel;
 
   % Controller to user interface.
-  light : Product;
-  unlight : Product;
+  showMoney : Int;
+
+  setSelectable : Product # Bool;
+  setSelectable : CoffeeSupplement # Bool;
+
+  setEmpty : Product # Bool;
+  setEmpty : CoffeeSupplement # Bool;
+  setEmpty : Extra # Bool;
+
+  % Machine to controller.
+  coin : Value;
+  return_last_coin : Value;
+
+  % Controller to machine.
+
+  % Actions between controller components.
   accept;
+
 proc
-  CoffeeSelect = pressed(Milk) + pressed(Sugar);
-  Select = (pressed(Coffee).CoffeeSelect + pressed(Coffee) + pressed(HotWater) + pressed(ColdWater)).accept;
+  CoffeeSelect = setSelectable(Milk, true).setSelectable(Sugar, true)
+	.setSelectable(Coffee, false).setSelectable(HotWater, false)
+	.setSelectable(ColdWater, false).(pressed(Milk) + pressed(Sugar) + tau);
+
+  Reset = setSelectable(Milk, false).setSelectable(Sugar, false)
+	.setSelectable(Coffee, true).setSelectable(HotWater, true)
+	.setSelectable(ColdWater, true);
+
+  ProductSelect = (pressed(Coffee).CoffeeSelect + pressed(HotWater) + pressed(ColdWater)).CountMoney(0);
+
+  Continue = tau.Continue;
+
+  CountMoney(total : Int) = sum v:Value.(total < 100 && value(v)+total <= 100) -> (coin(v).CountMoney(total + value(v)) + cancel.UIComponent) <> 
+  (total < 100 && value(v)+total > 100) -> (coin(v).return_last_coin(v).CountMoney(total))<>Continue;
+
+  UIComponent = Reset.ProductSelect;
+
+  Start = UIComponent;
 
 init
-  Select;
+  Start;
