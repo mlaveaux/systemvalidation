@@ -1,0 +1,11 @@
+sort Supplement = struct Milk | Sugar | Beans;
+
+act
+  % machine to controller.
+  collect : Supplement;
+  
+proc
+  Collect = collect(Beans) + collect(Beans).(collect(Milk) + collect(Sugar)) + collect(Beans).collect(Milk).collect(Sugar);
+  
+init
+  Collect;
