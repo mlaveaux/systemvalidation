@@ -1,6 +1,33 @@
 sort Resource = struct Water|Milk|Sugar|Cup|CoffeeBean;
 sort Product = struct p_Coffee|p_HotWater|p_ColdWater|p_Milk|p_Sugar;
-sort set = Set (Resource);
+sort ResourceSet = Set (Resource);
+map needed_for: Resource # Product -> Bool;
+eqn 
+	needed_for(Water, p_Coffee) -> true;
+	needed_for(Water, p_Hotwater) -> true;
+	needed_for(Water, p_Coldwater) -> true;
+	needed_for(Water, p_Milk) -> false;
+	needed_for(Water, p_Sugar) -> false;
+	needed_for(Milk, p_Coffee) -> false;
+	needed_for(Milk, p_Hotwater) -> false;
+	needed_for(Milk, p_Coldwater) -> false;
+	needed_for(Milk, p_Milk) -> true;
+	needed_for(Milk, p_Sugar) -> false;
+	needed_for(Sugar, p_Coffee) -> false;
+	needed_for(Sugar, p_Hotwater) -> false;
+	needed_for(Sugar, p_Coldwater) -> false;
+	needed_for(Sugar, p_Milk) -> false;
+	needed_for(Sugar, p_Sugar) -> true;
+	needed_for(Cup, p_Coffee) -> true;
+	needed_for(Cup, p_Hotwater) -> true;
+	needed_for(Cup, p_Coldwater) -> true;
+	needed_for(Cup, p_Milk) -> false;
+	needed_for(Cup, p_Sugar) -> false;
+	needed_for(CoffeeBean, p_Coffee) -> true;
+	needed_for(CoffeeBean, p_Hotwater) -> false;
+	needed_for(CoffeeBean, p_Coldwater) -> false;
+	needed_for(CoffeeBean, p_Milk) -> false;
+	needed_for(CoffeeBean, p_Sugar) -> false;
 
 act
 
@@ -14,7 +41,7 @@ act
 
 proc
 
-    Summation(s: set) = sum r:Resource. ((Available(s).Summation(s)) + ((r in s && r == Water) -> empty(Water).EmptyWater.Summation({R: Resource| R in s && R != r}) <>
+    Summation(s: ResourceSet) = sum r:Resource. ((Available(s).Summation(s)) + ((r in s && r == Water) -> empty(Water).EmptyWater.Summation({R: Resource| R in s && R != r}) <>
                         (r in s && r == Milk) -> empty(Milk).EmptyMilk.Summation({R: Resource| R in s && R != r}) <>
                         (r in s && r == Sugar) -> empty(Sugar).EmptySugar.Summation({R: Resource| R in s && R != r}) <>
                         (r in s && r == CoffeeBean) -> empty(CoffeeBean).EmptyCoffeeBean.Summation({R: Resource| R in s && R != r}) <>
@@ -35,7 +62,7 @@ proc
 
     EmptySugar = set_selectable(p_Sugar, false).set_empty(Sugar, true);
 
-    Available(s: set) = sum r:Resource. (r in s) -> available(r);
+    Available(s: ResourceSet) = sum r:Resource. (r in s) -> available(r);
 
     Start = Summation({R:Resource|true});
 
