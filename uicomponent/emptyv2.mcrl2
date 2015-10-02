@@ -1,0 +1,40 @@
+sort Resource = struct Water|Milk|Sugar|Cup|CoffeeBean;
+sort Product = struct p_Coffee|p_HotWater|p_ColdWater|p_Milk|p_Sugar;
+sort set = Set (Resource);
+
+act
+
+    empty : Resource;
+
+    set_selectable : Product # Bool;
+
+    set_empty : Resource # Bool;
+
+proc
+
+    Summation(s: set) = sum r:Resource. (r in s && r == Water) -> empty(Water).EmptyWater.Summation({R: Resource| R in s && R != r}) <>
+                        (r in s && r == Milk) -> empty(Milk).EmptyMilk.Summation({R: Resource| R in s && R != r}) <>
+                        (r in s && r == Sugar) -> empty(Sugar).EmptySugar.Summation({R: Resource| R in s && R != r}) <>
+                        (r in s && r == CoffeeBean) -> empty(CoffeeBean).EmptyCoffeeBeans.Summation({R: Resource| R in s && R != r}) <>
+                        (r in s && r == Cup) -> empty(Cup).EmptyCups.Summation({R: Resource| R in s && R != r});
+
+    EmptyCups = set_selectable(p_Milk, false).set_selectable(p_Sugar, false)
+        .set_selectable(p_Coffee, false).set_selectable(p_HotWater, false)
+        .set_selectable(p_ColdWater, false).set_empty(Cup, true);
+
+    EmptyWater = set_selectable(p_Milk, false).set_selectable(p_Sugar, false)
+        .set_selectable(p_Coffee, false).set_selectable(p_HotWater, false)
+        .set_selectable(p_ColdWater, false).set_empty(Water, true);
+
+    EmptyCoffeeBeans = set_selectable(p_Milk, false).set_selectable(p_Sugar, false)
+        .set_selectable(p_Coffee, false).set_empty(CoffeeBean, true);
+
+    EmptyMilk = set_selectable(p_Milk, false).set_empty(Milk, true);
+
+    EmptySugar = set_selectable(p_Sugar, false).set_empty(Sugar, true);
+
+    Start = Summation({R:Resource|true});
+
+init
+    
+    hide({set_selectable, set_empty}, Start);
