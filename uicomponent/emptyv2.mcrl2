@@ -15,10 +15,10 @@ proc
     Summation(s: set) = sum r:Resource. (r in s && r == Water) -> empty(Water).EmptyWater.Summation({R: Resource| R in s && R != r}) <>
                         (r in s && r == Milk) -> empty(Milk).EmptyMilk.Summation({R: Resource| R in s && R != r}) <>
                         (r in s && r == Sugar) -> empty(Sugar).EmptySugar.Summation({R: Resource| R in s && R != r}) <>
-                        (r in s && r == CoffeeBean) -> empty(CoffeeBean).EmptyCoffeeBeans.Summation({R: Resource| R in s && R != r}) <>
-                        (r in s && r == Cup) -> empty(Cup).EmptyCups.Summation({R: Resource| R in s && R != r});
+                        (r in s && r == CoffeeBean) -> empty(CoffeeBean).EmptyCoffeeBean.Summation({R: Resource| R in s && R != r}) <>
+                        (r in s && r == Cup) -> empty(Cup).EmptyCup.Summation({R: Resource| R in s && R != r});
 
-    EmptyCups = set_selectable(p_Milk, false).set_selectable(p_Sugar, false)
+    EmptyCup = set_selectable(p_Milk, false).set_selectable(p_Sugar, false)
         .set_selectable(p_Coffee, false).set_selectable(p_HotWater, false)
         .set_selectable(p_ColdWater, false).set_empty(Cup, true);
 
@@ -26,7 +26,7 @@ proc
         .set_selectable(p_Coffee, false).set_selectable(p_HotWater, false)
         .set_selectable(p_ColdWater, false).set_empty(Water, true);
 
-    EmptyCoffeeBeans = set_selectable(p_Milk, false).set_selectable(p_Sugar, false)
+    EmptyCoffeeBean = set_selectable(p_Milk, false).set_selectable(p_Sugar, false)
         .set_selectable(p_Coffee, false).set_empty(CoffeeBean, true);
 
     EmptyMilk = set_selectable(p_Milk, false).set_empty(Milk, true);
