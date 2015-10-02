@@ -30,6 +30,7 @@ act
 
     % Machine to controller.
     coin : Value;
+    too_much_coin : Value;
     return_last_coin : Value;
 
     % Controller to machine.
@@ -37,24 +38,24 @@ act
     % Actions between controller components.
 
 proc
-    CoffeeSelect = set_selectable(Milk, true).set_selectable(Sugar, true)
+    CoffeeSelect = (set_selectable(Milk, true)+tau).(set_selectable(Sugar, true)+tau)
         .set_selectable(Coffee, false).set_selectable(HotWater, false)
-        .set_selectable(ColdWater, false).(pressed(Milk) + pressed(Sugar) + tau);
+        .set_selectable(ColdWater, false).(pressed(Milk) + pressed(Sugar) + pressed(Milk).pressed(Sugar) + pressed(Sugar).pressed(Milk) + tau);
 
     Reset = set_selectable(Milk, false).set_selectable(Sugar, false)
-        .set_selectable(Coffee, true).set_selectable(HotWater, true)
-        .set_selectable(ColdWater, true);
+        .(set_selectable(Coffee, true)+tau).(set_selectable(HotWater, true)+tau)
+        .(set_selectable(ColdWater, true)+tau);
 
-    ProductSelect = (pressed(Coffee).CoffeeSelect + pressed(HotWater) + pressed(ColdWater)).CountMoney(0);
+    ProductSelect = pressed(Coffee).CoffeeSelect.CountMoney(0) + pressed(HotWater).Start + pressed(ColdWater).Start;
 
     Continue = tau.Continue;
 
     CountMoney(total : Nat) = sum v:Value.(total < 100 && value(v)+total <= 100) -> (coin(v).CountMoney(total + value(v)) + cancel.UIComponent) <> 
-        (total < 100 && value(v)+total > 100) -> (coin(v).return_last_coin(v).CountMoney(total))<>Continue;
+        (total < 100 && value(v)+total > 100) -> (too_much_coin(v).return_last_coin(v).CountMoney(total))<>Start;
 
     UIComponent = Reset.ProductSelect;
 
-    Start = UIComponent;
+    Start = UIComponent.Start;
 
 init
-  Start;
+  hide({coin},Start);
