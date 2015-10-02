@@ -10,13 +10,15 @@ act
 
     set_empty : Resource # Bool;
 
+    available : Resource;
+
 proc
 
-    Summation(s: set) = sum r:Resource. (r in s && r == Water) -> empty(Water).EmptyWater.Summation({R: Resource| R in s && R != r}) <>
+    Summation(s: set) = sum r:Resource. ((Available(s).Summation(s)) + ((r in s && r == Water) -> empty(Water).EmptyWater.Summation({R: Resource| R in s && R != r}) <>
                         (r in s && r == Milk) -> empty(Milk).EmptyMilk.Summation({R: Resource| R in s && R != r}) <>
                         (r in s && r == Sugar) -> empty(Sugar).EmptySugar.Summation({R: Resource| R in s && R != r}) <>
                         (r in s && r == CoffeeBean) -> empty(CoffeeBean).EmptyCoffeeBean.Summation({R: Resource| R in s && R != r}) <>
-                        (r in s && r == Cup) -> empty(Cup).EmptyCup.Summation({R: Resource| R in s && R != r});
+                        (r in s && r == Cup) -> empty(Cup).EmptyCup.Summation({R: Resource| R in s && R != r})));
 
     EmptyCup = set_selectable(p_Milk, false).set_selectable(p_Sugar, false)
         .set_selectable(p_Coffee, false).set_selectable(p_HotWater, false)
@@ -32,6 +34,8 @@ proc
     EmptyMilk = set_selectable(p_Milk, false).set_empty(Milk, true);
 
     EmptySugar = set_selectable(p_Sugar, false).set_empty(Sugar, true);
+
+    Available(s: set) = sum r:Resource. (r in s) -> available(r);
 
     Start = Summation({R:Resource|true});
 
