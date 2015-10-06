@@ -1,20 +1,20 @@
 sort Resource = struct Water|Milk|Sugar|Cup|CoffeeBean;
 sort Product = struct p_Coffee|p_HotWater|p_ColdWater|p_Milk|p_Sugar;
 sort ResourceSet = Set (Resource);
+
 map list_of_resources: Product -> Set (Resource);
+
 eqn 	
 
-	list_of_resources(p_Coffee) = {Water, Cup, CoffeeBean};
-	list_of_resources(p_HotWater) = {Water, Cup};
-	list_of_resources(p_ColdWater) = {Water, Cup};
-	list_of_resources(p_Milk) = {Milk};
-	list_of_resources(p_Sugar) = {Sugar};
+    list_of_resources(p_Coffee) = {Water, Cup, CoffeeBean};
+    list_of_resources(p_HotWater) = {Water, Cup};
+    list_of_resources(p_ColdWater) = {Water, Cup};
+    list_of_resources(p_Milk) = {Milk};
+    list_of_resources(p_Sugar) = {Sugar};
 
 act
 
     empty : Resource;
-
-    set_selectable : Product # Bool;
 
     set_empty : Resource # Bool;
 
