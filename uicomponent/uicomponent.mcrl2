@@ -1,8 +1,39 @@
-sort Product = struct Coffee|HotWater|ColdWater;
-sort CoffeeSupplement = struct Milk|Sugar|CoffeeBeans;
-sort Extra = struct Cup;
 
+
+
+sort Resource = struct Water|Milk|Sugar|Cup|CoffeeBean;
+sort Product = struct p_Coffee|p_HotWater|p_ColdWater|p_Milk|p_Sugar;
 sort Value = struct tencent|fivecent|twentycent|fiftycent|oneeuro|twoeuro; 
+sort ResourceSet = Set (Resource);
+
+map needed_for: Resource # Product -> Bool;
+eqn 
+	needed_for(Water, p_Coffee) = true;
+	needed_for(Water, p_HotWater) = true;
+	needed_for(Water, p_ColdWater) = true;
+	needed_for(Water, p_Milk) = false;
+	needed_for(Water, p_Sugar) = false;
+	needed_for(Milk, p_Coffee) = false;
+	needed_for(Milk, p_HotWater) = false;
+	needed_for(Milk, p_ColdWater) = false;
+	needed_for(Milk, p_Milk) = true;
+	needed_for(Milk, p_Sugar) = false;
+	needed_for(Sugar, p_Coffee) = false;
+	needed_for(Sugar, p_HotWater) = false;
+	needed_for(Sugar, p_ColdWater) = false;
+	needed_for(Sugar, p_Milk) = false;
+	needed_for(Sugar, p_Sugar) = true;
+	needed_for(Cup, p_Coffee) = true;
+	needed_for(Cup, p_HotWater) = true;
+	needed_for(Cup, p_ColdWater) = true;
+	needed_for(Cup, p_Milk) = false;
+	needed_for(Cup, p_Sugar) = false;
+	needed_for(CoffeeBean, p_Coffee) = true;
+	needed_for(CoffeeBean, p_HotWater) = false;
+	needed_for(CoffeeBean, p_ColdWater) = false;
+	needed_for(CoffeeBean, p_Milk) = false;
+	needed_for(CoffeeBean, p_Sugar) = false;
+
 map value : Value -> Pos;
 var v : Value;
 eqn (v==tencent) -> value(v) = 10;
@@ -13,49 +44,72 @@ eqn (v==tencent) -> value(v) = 10;
     (v==twoeuro) -> value(v) = 200;
 
 act
-    % User interface to controller.
-    pressed : Product;
-    pressed : CoffeeSupplement;
-    cancel;
+	% Controller to machine.
+	heat_water;
+	return_last_coin;
+	return_money;
+	deposit_money;
+	place_cup;
+	collect : Resource;
+	pour;
+  
+	% Machine to controller.
+	water_heated;
+	cup_placed : Bool;
+	pour_done;
+	coin : Value;
+	empty : Resource;
 
     % Controller to user interface.
-    show_money : Nat;
-
+    show_money : Nat;	
     set_selectable : Product # Bool;
-    set_selectable : CoffeeSupplement # Bool;
+    set_empty : Resource # Bool;
 
-    set_empty : Product # Bool;
-    set_empty : CoffeeSupplement # Bool;
-    set_empty : Extra # Bool;
+    % User interface to controller.
+    pressed : Product;
+    cancel;
 
-    % Machine to controller.
-    coin : Value;
-    too_much_coin : Value;
-    return_last_coin : Value;
-
-    % Controller to machine.
-
-    % Actions between controller components.
-
+	% Other
+	available : Resource;
+	too_much_coin : Value;
+	
+	
 proc
-    CoffeeSelect = (set_selectable(Milk, true)+tau).(set_selectable(Sugar, true)+tau)
-        .set_selectable(Coffee, false).set_selectable(HotWater, false)
-        .set_selectable(ColdWater, false).(pressed(Milk) + pressed(Sugar) + pressed(Milk).pressed(Sugar) + pressed(Sugar).pressed(Milk) + tau);
+%%%%%%%%%%%%%%%%%%%%%%%Water%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	PlaceCup = cup_placed(false).place_cup.PlaceCup + cup_placed(true);
+	
+	HeatWater = heat_water.water_heated;
+	
+	Pour = (HeatWater.PlaceCup + PlaceCup) . (Collect.pour + pour).pour_done . Pour;
+	
+	Collect = collect(CoffeeBean) + collect(CoffeeBean).(collect(Milk) + collect(Sugar) + collect(Milk).collect(Sugar));
+  
+%%%%%%%%%%%%%%%%%%%%%%empty%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	IsAvailableSet(s: ResourceSet) = sum r:Resource. ((Available(s).IsAvailableSet(s)) + ((r in s ) -> empty(r).set_empty(r,true).IsAvailableSet({R: Resource| R in s && R != r}))); 
 
-    Reset = set_selectable(Milk, false).set_selectable(Sugar, false)
-        .(set_selectable(Coffee, true)+tau).(set_selectable(HotWater, true)+tau)
-        .(set_selectable(ColdWater, true)+tau);
+    Available(s: ResourceSet) = sum r:Resource. (r in s) -> available(r);
 
-    ProductSelect = pressed(Coffee).CoffeeSelect.CountMoney(0) + pressed(HotWater).Start + pressed(ColdWater).Start;
+    StartEmpty = IsAvailableSet({R:Resource|true});
+	
+%%%%%%%%%%%%%%%%%%%%selection%%%%%%%%%%%%%%%%%%%%%%%%
+    CoffeeSelect = (set_selectable(p_Milk, true)+tau).(set_selectable(p_Sugar, true)+tau)
+        .set_selectable(p_Coffee, false).set_selectable(p_HotWater, false)
+        .set_selectable(p_ColdWater, false).(pressed(p_Milk) + pressed(p_Sugar) + pressed(p_Milk).pressed(p_Sugar) + pressed(p_Sugar).pressed(p_Milk) + tau);
+
+    Reset = set_selectable(p_Milk, false).set_selectable(p_Sugar, false)
+        .(set_selectable(p_Coffee, true)+tau).(set_selectable(p_HotWater, true)+tau)
+        .(set_selectable(p_ColdWater, true)+tau);
+
+    ProductSelect = pressed(p_Coffee).CoffeeSelect.CountMoney(0) + pressed(p_HotWater).StartSelection + pressed(p_ColdWater).StartSelection;
 
     Continue = tau.Continue;
 
     CountMoney(total : Nat) = sum v:Value.(total < 100 && value(v)+total <= 100) -> (coin(v).CountMoney(total + value(v)) + cancel.UIComponent) <> 
-        (total < 100 && value(v)+total > 100) -> (too_much_coin(v).return_last_coin(v).CountMoney(total))<>Start;
+        (total < 100 && value(v)+total > 100) -> (too_much_coin(v).return_last_coin.CountMoney(total))<>StartSelection;
 
     UIComponent = Reset.ProductSelect;
 
-    Start = UIComponent.Start;
+    StartSelection = UIComponent.StartSelection;
 
 init
-  hide({coin},Start);
+  hide({coin},StartSelection) || Pour || StartEmpty;
