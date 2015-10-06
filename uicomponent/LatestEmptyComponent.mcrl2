@@ -1,0 +1,37 @@
+sort Resource = struct Water|Milk|Sugar|Cup|CoffeeBean;
+sort Product = struct p_Coffee|p_HotWater|p_ColdWater|p_Milk|p_Sugar;
+sort ResourceSet = Set (Resource);
+map list_of_resources: Product -> Set (Resource);
+eqn 	
+
+	list_of_resources(p_Coffee) = {Water, Cup, CoffeeBean};
+	list_of_resources(p_HotWater) = {Water, Cup};
+	list_of_resources(p_ColdWater) = {Water, Cup};
+	list_of_resources(p_Milk) = {Milk};
+	list_of_resources(p_Sugar) = {Sugar};
+
+act
+
+    empty : Resource;
+
+    set_selectable : Product # Bool;
+
+    set_empty : Resource # Bool;
+
+    available : Product;
+
+    unavailable : Product;
+
+proc
+
+    Summation(s: ResourceSet) = sum r:Resource. ((Unavailable(s).Summation(s)) +  (Available(s).Summation(s)) + ((r in s) -> empty(r).set_empty(r, true).Summation({R: Resource| R in s && R != r})));
+
+    Unavailable(s: ResourceSet) = sum p:Product. (((s+{r:Resource | r in list_of_resources(p)}) != s) -> unavailable(p));
+
+    Available(s: ResourceSet) = sum p:Product. (((s*{r:Resource | r in list_of_resources(p)}) == {r:Resource | r in list_of_resources(p)}) -> available(p));
+
+    Start = Summation({R:Resource|true});
+
+init
+    
+    hide({set_empty}, Start);
