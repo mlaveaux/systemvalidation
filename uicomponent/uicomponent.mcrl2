@@ -1,6 +1,3 @@
-
-
-
 sort Resource = struct Water|Milk|Sugar|Cup|CoffeeBean;
 sort Product = struct p_Coffee|p_HotWater|p_ColdWater|p_Milk|p_Sugar;
 sort Value = struct tencent|fivecent|twentycent|fiftycent|oneeuro|twoeuro; 
@@ -43,12 +40,12 @@ eqn
 
 map value : Value -> Pos;
 var v : Value;
-eqn (v==tencent) -> value(v) = 10;
-    (v==fivecent) -> value(v) = 5;
-    (v==twentycent) -> value(v) = 20;
-    (v==fiftycent) -> value(v) = 50;
-    (v==oneeuro) -> value(v) = 100;
-    (v==twoeuro) -> value(v) = 200;
+eqn	(v==tencent) -> value(v) = 10;
+	(v==fivecent) -> value(v) = 5;
+	(v==twentycent) -> value(v) = 20;
+	(v==fiftycent) -> value(v) = 50;
+	(v==oneeuro) -> value(v) = 100;
+	(v==twoeuro) -> value(v) = 200;
 
 act
 	% Controller to machine.
@@ -67,14 +64,14 @@ act
 	coin : Value;
 	empty : Resource;
 
-    % Controller to user interface.
-    show_money : Nat;	
-    set_selectable : Product # Bool;
-    set_empty : Resource # Bool;
+	% Controller to user interface.
+	show_money : Nat;	
+	set_selectable : Product # Bool;
+	set_empty : Resource # Bool;
 
-    % User interface to controller.
-    pressed : Product;
-    cancel;
+	% User interface to controller.
+	pressed : Product;
+	cancel;
 
 	% Other
 	available : Resource;
@@ -87,7 +84,7 @@ act
 	ready;
 	
 proc
-%%%%%%%%%%%%%%%%%%%%%%%Water%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% Water component
 	PlaceCup = cup_placed(false).place_cup.PlaceCup + cup_placed(true);
 	
 	HeatWater = heat_water.water_heated;
@@ -96,14 +93,16 @@ proc
 	
 	Collect(products: ProductSet, resources : ResourceSet) = sum p:Product .sum r:Resource.(p in products && needed_for(r,p) && !( r in resources) && r != Water && r != Cup) -> collect(r).Collect(products, {res:Resource|res in resources || res == r }) ;
 
-%%%%%%%%%%%%%%%%%%%%%%empty%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	IsAvailableSet(s: ResourceSet) = sum r:Resource. ((Available(s).IsAvailableSet(s)) + ((r in s ) -> empty(r).set_empty(r,true).IsAvailableSet({R: Resource| R in s && R != r}))); 
+	% Empty component
+	IsAvailableSet(s: ResourceSet) = sum r:Resource. ((Available(s).IsAvailableSet(s)) 
+		+ ((r in s ) -> empty(r).set_empty(r,true).IsAvailableSet({R: Resource| R in s && R != r}))); 
 
-    Available(s: ResourceSet) = sum r:Resource. (r in s) -> available(r);
+	Available(s: ResourceSet) = sum r:Resource.(r in s) -> available(r);
 
-    StartEmpty = IsAvailableSet({R:Resource|true});
+	StartEmpty = IsAvailableSet({R:Resource|true});
+
 	
-%%%%%%%%%%%%%%%%%%%%selection%%%%%%%%%%%%%%%%%%%%%%%%
+	% Selection component
 
     Reset = select_ready.set_selectable(p_Milk, false).set_selectable(p_Sugar, false)
         .(set_selectable(p_Coffee, true)+tau).(set_selectable(p_HotWater, true)+tau)
@@ -121,13 +120,13 @@ proc
 
     CountMoney(total : Nat, products : ProductSet) = 
 		sum v:Value.
-			(total < 100 && value(v)+total <= 100) -> (coin(v).CountMoney(total + value(v), products) + cancel.UIComponent) <> 
+			(total < 100 && value(v)+total <= 100) -> (coin(v).CountMoney(total + value(v), products) + cancel.StartSelection) <> 
 			(total < 100 && value(v)+total > 100) -> (too_much_coin(v).return_last_coin.CountMoney(total, products))<>
 			products_selected(products).StartSelection;
 
-    UIComponent = Reset.ProductSelect;
 
-    StartSelection = UIComponent;
+	StartSelection = Reset.ProductSelect.StartSelection;
+
 
 
 	
@@ -135,3 +134,4 @@ init
 block({products_selected,get_selected_products,pour_ready,select_ready},
   comm({products_selected|get_selected_products -> comm_product,pour_ready|select_ready -> ready},hide({coin},StartSelection) || Pour)); 
   %|| StartEmpty;
+
