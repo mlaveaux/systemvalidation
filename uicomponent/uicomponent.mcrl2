@@ -137,15 +137,10 @@ proc
 			(total < 100 && value(v)+total > 100) -> (too_much_coin(v).return_last_coin.CountMoney(total, products))<>
 			products_selected(products).StartSelection;
 
-	ProductSelect = pressed(p_Coffee).CoffeeSelect.CountMoney(0) + pressed(p_HotWater).StartSelection + pressed(p_ColdWater).StartSelection;
-
 	CountMoney(total : Nat) = sum v:Value.(total < 100 && value(v)+total <= 100) -> (coin(v).CountMoney(total + value(v)) + cancel.StartSelection) <> 
 		(total < 100 && value(v)+total > 100) -> (too_much_coin(v).return_last_coin.CountMoney(total)) <> StartSelection;
 
 	StartSelection = Reset.ProductSelect.StartSelection;
-
-
-
 	
 init
 block({products_selected,get_selected_products,pour_ready,select_ready},
