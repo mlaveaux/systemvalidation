@@ -1,2 +1,2 @@
-# The system is deadlock free as after every action it is possible to do another.
+% The system is deadlock free as after every action it is possible to do another.
 [true*]<true>true
