@@ -1,0 +1,3 @@
+% pressed(r2) cannot happen after another pressed(r1) without a cancel or pour inbetween for
+% r1,r2 in {ColdWater, HotWater, Coffee}.
+forall r1: Product. exists r2: Product. [pressed(r1).(!cancel && !pour).pressed(r2)]false
