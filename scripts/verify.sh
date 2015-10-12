@@ -1,5 +1,5 @@
 #!/bin/sh
-#"$(dirname $0)/makemodel.sh $1"
+. ./$(dirname $0)/makemodel.sh $1 &&
 
 LTS_FILENAME="$1.lts"
 STATEFORMULA_FILENAME="$2.mcf"
