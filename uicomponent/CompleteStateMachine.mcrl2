@@ -1,9 +1,14 @@
+%%%%%%%%%%%%%DATA%TYPES%%%%%%%%%%%
 sort Resource = struct Water|Milk|Sugar|Cup|CoffeeBean;
 sort Product = struct p_Coffee|p_HotWater|p_ColdWater|p_Milk|p_Sugar;
 sort Value = struct tencent|fivecent|twentycent|fiftycent|oneeuro|twoeuro; 
 sort ResourceSet = Set (Resource);
 sort ProductSet = Set (Product);
 sort PProductSet = Set (ProductSet);
+
+
+%%%%%%%%%%%%%MAPPINGS%%%%%%%%%%%%
+% a function that checks whether a set of products is allowed
 map allowedProductSet: ProductSet -> Bool;
 var ps : ProductSet;
 eqn (ps == {p_ColdWater} || ps == {p_HotWater} || ps == {p_Coffee} || ps == {p_Coffee,p_Milk} || ps == {p_Coffee,p_Sugar} || ps == {p_Coffee,p_Sugar,p_Milk}) -> 
@@ -11,7 +16,7 @@ eqn (ps == {p_ColdWater} || ps == {p_HotWater} || ps == {p_Coffee} || ps == {p_C
 	!(ps == {p_ColdWater} || ps == {p_HotWater} || ps == {p_Coffee} || ps == {p_Coffee,p_Milk} || ps == {p_Coffee,p_Sugar} || ps == {p_Coffee,p_Sugar,p_Milk}) -> 
 		allowedProductSet(ps) = false;
 	
-
+% a function that shows the relation between products and resources, namely what resource is needed for what product
 map needed_for: Resource # ProductSet -> Bool;
 var ps : ProductSet;
 eqn (p_Coffee in ps || p_HotWater in ps ||p_ColdWater in ps) -> needed_for(Water, ps) = true;
@@ -25,6 +30,7 @@ eqn (p_Coffee in ps || p_HotWater in ps ||p_ColdWater in ps) -> needed_for(Water
 	(p_Coffee in ps) -> needed_for(CoffeeBean, ps) = true;
 	!(p_Coffee in ps) -> needed_for(CoffeeBean, ps) = false;
 
+% a function that maps the value of a coin to a positive integer
 map value : Value -> Pos;
 var v : Value;
 eqn	(v==tencent) -> value(v) = 10;
@@ -34,14 +40,16 @@ eqn	(v==tencent) -> value(v) = 10;
 	(v==oneeuro) -> value(v) = 100;
 	(v==twoeuro) -> value(v) = 200;
 	
+% again what resources are needed for what product, but a different way of mapping it
 map list_of_resources: Product -> Set (Resource);
-
 eqn list_of_resources(p_Coffee) = {Water, Cup, CoffeeBean};
 	list_of_resources(p_HotWater) = {Water, Cup};
 	list_of_resources(p_ColdWater) = {Water, Cup};
 	list_of_resources(p_Milk) = {Milk};
 	list_of_resources(p_Sugar) = {Sugar};
 
+	
+%%%%%%%%%%%%ACTIONS%%%%%%%%%%%%
 act
 	% Controller to machine.
 	heat_water;
@@ -68,72 +76,89 @@ act
 	pressed : Product;
 	cancel;
 
-	% Other
+	% Communication
 	available : Product # Bool;
-	unavailable : Product;
-	too_much_coin : Value;
-	products_selected : ProductSet;
-	get_selected_products : ProductSet;
-	comm_product : ProductSet;
 	check_available : Product # Bool;
 	comm_available : Product # Bool;
-	comm2_available : Product # Bool;
-	pour_ready;
-	select_ready;
-	ready;
+	
 	empty_ready;
 	empty_check;
 	comm_emptydone;
 	
+	products_selected : ProductSet;
+	get_selected_products : ProductSet;
+	comm_product : ProductSet;
+	
+	pour_ready;
+	select_ready;
+	comm_ready;
+	
+	% Other
+	too_much_coin : Value;
+	
+	
+%%%%%%%%%%%%%%%%PROCESS%%%%%%%%%%%%%
 proc
-	% Product handling component
+	%%%%%% Product handling component
+	% placing the cup
 	PlaceCup = cup_placed(false).place_cup.PlaceCup + cup_placed(true);
 	
+	% heating water
 	HeatWater = heat_water.water_heated;
 	
+	% pouring the selected product
 	Pour = (pour_ready + (sum products:ProductSet.(allowedProductSet(products)) -> 
 		get_selected_products(products). ((p_ColdWater in products) -> PlaceCup <> HeatWater.PlaceCup) 
 		. Collect({r:Resource|r!=Water && r!=Cup && needed_for(r,products)}).pour.pour_done )). Pour;
 	
+	% collecting the needed resources
 	Collect(resources : ResourceSet) = (resources=={})->pour.pour_done.Pour <> 
 		sum r:Resource.((( r in resources)) -> 
 		collect(r).Collect({res:Resource|res in resources && res != r })) ;
 
 		
-	% Empty component
+	%%%%%% Empty component
+	% going over all possible combinations of empty resources
 	Summation(s: ResourceSet) = sum r:Resource. ((Unavailable(s).Summation(s)) +  (Available(s).Summation(s)) + ((r in s) -> 
 		empty_ready.empty(r).set_empty(r, true).Summation({R: Resource| R in s && R != r})));
 
+	% showing which products are unavailable
 	Unavailable(s: ResourceSet) = sum p:Product. (((s+{r:Resource | r in list_of_resources(p)}) != s) -> available(p,false));
 
+	% showing which products are available
 	Available(s: ResourceSet) = sum p:Product. (((s*{r:Resource | r in list_of_resources(p)}) == {r:Resource | r in list_of_resources(p)}) -> available(p,true));
 
 	StartEmpty = Summation({R:Resource|true});
 	
 	
-	% Selection component
-	Reset = select_ready.empty_check.set_selectable(p_Milk, false).set_selectable(p_Sugar, false)
-		.(check_available(p_Coffee, true).set_selectable(p_Coffee, true)+check_available(p_Coffee, false).set_selectable(p_Coffee, false))
-                       .(check_available(p_HotWater, true).set_selectable(p_HotWater, true)+check_available(p_HotWater, false).set_selectable(p_HotWater, false))
-		.(check_available(p_ColdWater, true).set_selectable(p_ColdWater, true)+check_available(p_ColdWater, false).set_selectable(p_ColdWater, false));
+	%%%%%% Selection component
+	% starting the machine, making everything that can be made selectable selectable
+	Reset = select_ready.empty_check
+		.set_selectable(p_Milk, false).set_selectable(p_Sugar, false)
+		.(check_available(p_Coffee, true).set_selectable(p_Coffee, true) + check_available(p_Coffee, false).set_selectable(p_Coffee, false))
+        .(check_available(p_HotWater, true).set_selectable(p_HotWater, true) + check_available(p_HotWater, false).set_selectable(p_HotWater, false))
+		.(check_available(p_ColdWater, true).set_selectable(p_ColdWater, true) + check_available(p_ColdWater, false).set_selectable(p_ColdWater, false));
 
+	% selecting a product
 	ProductSelect = 
 		% when coffee is selected
 		check_available(p_Coffee, true).pressed(p_Coffee)
 			% set milk sugar selectable and the rest unselectable
 			.((check_available(p_Milk, true).set_selectable(p_Milk, true)+check_available(p_Milk, false).set_selectable(p_Milk, false))
 			.(check_available(p_Sugar, true).set_selectable(p_Sugar, true)+check_available(p_Sugar, false).set_selectable(p_Sugar, false))
-			.set_selectable(p_Coffee, false).set_selectable(p_HotWater, false)
-			.set_selectable(p_ColdWater, false)
-			% and when milk and or sugar is selected
-			.check_available(p_Milk,true).(pressed(p_Milk).CountMoney(0, {p : Product|p==p_Coffee || p==p_Milk}) 
-			+ check_available(p_Sugar,true).pressed(p_Sugar).CountMoney(0, {p : Product|p==p_Coffee || p==p_Sugar}) 
-			+ check_available(p_Milk,true).(pressed(p_Milk).check_available(p_Sugar,true).pressed(p_Sugar) + check_available(p_Sugar,true).pressed(p_Sugar).check_available(p_Milk,true).pressed(p_Milk)).CountMoney(0, {p : Product|p==p_Coffee || p==p_Milk || p==p_Sugar}) 
-			+ CountMoney(0, {p : Product|p==p_Coffee})))
+			.set_selectable(p_Coffee, false).set_selectable(p_HotWater, false).set_selectable(p_ColdWater, false)
+			% and when milk and or sugar is/are selected
+			.(	  check_available(p_Milk,true).pressed(p_Milk).CountMoney(0, {p : Product|p==p_Coffee || p==p_Milk}) 
+				+ check_available(p_Sugar,true).pressed(p_Sugar).CountMoney(0, {p : Product|p==p_Coffee || p==p_Sugar}) 
+				+ check_available(p_Milk,true).(pressed(p_Milk).check_available(p_Sugar,true).pressed(p_Sugar).CountMoney(0, {p : Product|p==p_Coffee || p==p_Milk || p==p_Sugar})
+				+ check_available(p_Sugar,true).pressed(p_Sugar).check_available(p_Milk,true).pressed(p_Milk)).CountMoney(0, {p : Product|p==p_Coffee || p==p_Milk || p==p_Sugar}) 
+				+ CountMoney(0, {p : Product|p==p_Coffee}))
+			)
 		% or when hot water or cold water is selected
 		+ check_available(p_HotWater,true).pressed(p_HotWater).products_selected({p : Product|p==p_HotWater}).StartSelection 
 		+ check_available(p_ColdWater,true).pressed(p_ColdWater).products_selected({p : Product|p==p_ColdWater}).StartSelection;
 
+	% putting in money
 	CountMoney(total : Nat, products : ProductSet) = 
 		sum v:Value.
 			(total < 100 && value(v)+total <= 100) -> (coin(v).CountMoney(total + value(v), products) + cancel.return_money.StartSelection) <> 
@@ -142,12 +167,10 @@ proc
 
 	StartSelection = Reset.ProductSelect.StartSelection;
 	
+%%%%%% Init
 init
-block({available, check_available, empty_check, empty_ready, 
-       products_selected,get_selected_products,pour_ready,select_ready},
-	comm({available|check_available->comm_available, empty_ready|empty_check->comm_emptydone,
-                 products_selected|get_selected_products -> comm_product,pour_ready|select_ready -> ready},
-		hide({coin},StartSelection) || StartEmpty || Pour)); 
-
-  %hide({set_empty},StartEmpty);
-
+	block({available, check_available, empty_check, empty_ready, 
+			products_selected,get_selected_products,pour_ready,select_ready},
+		comm({available|check_available->comm_available, empty_ready|empty_check->comm_emptydone,
+				products_selected|get_selected_products -> comm_product,pour_ready|select_ready -> comm_ready},
+			hide({coin},StartSelection) || StartEmpty || Pour)); 
