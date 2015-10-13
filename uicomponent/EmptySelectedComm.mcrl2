@@ -81,6 +81,9 @@ act
 	pour_ready;
 	select_ready;
 	ready;
+	empty_ready;
+	empty_check;
+	comm_emptydone;
 	
 proc
 	% Product handling component
@@ -99,7 +102,7 @@ proc
 		
 	% Empty component
 	Summation(s: ResourceSet) = sum r:Resource. ((Unavailable(s).Summation(s)) +  (Available(s).Summation(s)) + ((r in s) -> 
-		empty(r).set_empty(r, true).Summation({R: Resource| R in s && R != r})));
+		empty_ready.empty(r).set_empty(r, true).Summation({R: Resource| R in s && R != r})));
 
 	Unavailable(s: ResourceSet) = sum p:Product. (((s+{r:Resource | r in list_of_resources(p)}) != s) -> available(p,false));
 
@@ -109,7 +112,7 @@ proc
 	
 	
 	% Selection component
-	Reset = select_ready.set_selectable(p_Milk, false).set_selectable(p_Sugar, false)
+	Reset = empty_check.select_ready.set_selectable(p_Milk, false).set_selectable(p_Sugar, false)
 		.(check_available(p_Coffee, true).set_selectable(p_Coffee, true)+check_available(p_Coffee, false).set_selectable(p_Coffee, false))
                        .(check_available(p_HotWater, true).set_selectable(p_HotWater, true)+check_available(p_HotWater, false).set_selectable(p_HotWater, false))
 		.(check_available(p_ColdWater, true).set_selectable(p_ColdWater, true)+check_available(p_ColdWater, false).set_selectable(p_ColdWater, false));
@@ -139,8 +142,8 @@ proc
 	StartSelection = Reset.ProductSelect.StartSelection;
 	
 init
-block({available, check_available, set_empty},
-	comm({available|check_available->comm_available},
+block({available, check_available, set_empty, empty_check, empty_ready},
+	comm({available|check_available->comm_available, empty_ready|empty_check->comm_emptydone},
 		hide({coin},StartSelection) || hide({set_empty},StartEmpty))); 
 
   %hide({set_empty},StartEmpty);
