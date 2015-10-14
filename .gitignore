@@ -2,3 +2,4 @@
 *.lts
 *.pbes
 *.bes
+*.generated
