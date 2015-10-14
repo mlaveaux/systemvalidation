@@ -169,8 +169,10 @@ proc
 	
 %%%%%% Init
 init
-	block({available, check_available, empty_check, empty_ready, 
-			products_selected,get_selected_products,pour_ready,select_ready},
+    allow({heat_water, return_last_coin, return_money, deposit_money, place_cup, 
+            collect, pour, water_heated, cup_placed, pour_done, coin, empty,
+            show_money, set_selectable, set_empty, pressed, cancel, comm_available,
+            comm_emptydone, comm_product, comm_ready},
 		comm({available|check_available->comm_available, empty_ready|empty_check->comm_emptydone,
 				products_selected|get_selected_products -> comm_product,pour_ready|select_ready -> comm_ready},
 			hide({coin},StartSelection) || StartEmpty || Pour)); 
