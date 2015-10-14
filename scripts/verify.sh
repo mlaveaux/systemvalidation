@@ -14,4 +14,4 @@ fi
 echo ${STATEFORMULA_FILENAME}:
 
 lts2pbes --formula=${STATEFORMULA_FILENAME} ${LTS_FILENAME} ${PBES_FILENAME} &&
-pbes2bool ${PBES_FILENAME}
+pbes2bool $3 ${PBES_FILENAME}
