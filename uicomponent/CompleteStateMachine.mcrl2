@@ -120,7 +120,7 @@ proc
 	%%%%%% Empty component
 	% going over all possible combinations of empty resources
 	Summation(s: ResourceSet) = sum r:Resource. ((Unavailable(s).Summation(s)) +  (Available(s).Summation(s)) + ((r in s) -> 
-		empty_ready.empty(r).set_empty(r, true).Summation({R: Resource| R in s && R != r})));
+		empty_ready.(empty(r).set_empty(r, true).Summation({R: Resource| R in s && R != r}) + Summation(s))));
 
 	% showing which products are unavailable
 	Unavailable(s: ResourceSet) = sum p:Product. (((s+{r:Resource | r in list_of_resources(p)}) != s) -> available(p,false));
@@ -148,10 +148,8 @@ proc
 			.(check_available(p_Sugar, true).set_selectable(p_Sugar, true)+check_available(p_Sugar, false).set_selectable(p_Sugar, false))
 			.set_selectable(p_Coffee, false).set_selectable(p_HotWater, false).set_selectable(p_ColdWater, false)
 			% and when milk and or sugar is/are selected
-			.(	  check_available(p_Milk,true).pressed(p_Milk).CountMoney(0, {p : Product|p==p_Coffee || p==p_Milk}) 
-				+ check_available(p_Sugar,true).pressed(p_Sugar).CountMoney(0, {p : Product|p==p_Coffee || p==p_Sugar}) 
-				+ check_available(p_Milk,true).(pressed(p_Milk).check_available(p_Sugar,true).pressed(p_Sugar).CountMoney(0, {p : Product|p==p_Coffee || p==p_Milk || p==p_Sugar})
-				+ check_available(p_Sugar,true).pressed(p_Sugar).check_available(p_Milk,true).pressed(p_Milk)).CountMoney(0, {p : Product|p==p_Coffee || p==p_Milk || p==p_Sugar}) 
+			.(	  check_available(p_Milk,true).pressed(p_Milk).(check_available(p_Sugar,true).pressed(p_Sugar).CountMoney(0, {p : Product|p==p_Coffee || p==p_Milk || p==p_Sugar}) + CountMoney(0, {p : Product|p==p_Coffee || p==p_Milk}))
+				+ check_available(p_Sugar,true).pressed(p_Sugar).(check_available(p_Milk,true).pressed(p_Milk).CountMoney(0, {p : Product|p==p_Coffee || p==p_Milk || p==p_Sugar}) + CountMoney(0, {p : Product|p==p_Coffee || p==p_Sugar}))
 				+ CountMoney(0, {p : Product|p==p_Coffee}))
 			)
 		% or when hot water or cold water is selected
