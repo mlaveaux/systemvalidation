@@ -104,6 +104,10 @@ act
 	coffee_paid;
 	money_done;
 	comm_paid;
+
+	clear_money;
+	pre_pour;
+	comm_money_clear;
 	
 	
 %%%%%%%%%%%%%%%%PROCESS%%%%%%%%%%%%%
@@ -118,10 +122,10 @@ proc
 	% pouring the selected product
 	Pour = (pour_ready + (sum products:ProductSet.(allowedProductSet(products)) -> 
 		get_selected_products(products). ((p_ColdWater in products) -> PlaceCup <> HeatWater.PlaceCup) 
-		. Collect({r:Resource|r!=Water && r!=Cup && needed_for(r,products)}).pour.pour_done )). Pour;
+		. Collect({r:Resource|r!=Water && r!=Cup && needed_for(r,products)}).pre_pour.pour.pour_done )). Pour;
 	
 	% collecting the needed resources
-	Collect(resources : ResourceSet) = (resources=={})->pour.pour_done.Pour <> 
+	Collect(resources : ResourceSet) = (resources=={})->pre_pour.pour.pour_done.Pour <> 
 		sum r:Resource.((( r in resources)) -> 
 		collect(r).Collect({res:Resource|res in resources && res != r })) ;
 
@@ -183,7 +187,7 @@ proc
 			(total < 100 && value(v)+total > 100) -> (coin(v).return_last_coin.CountMoney(total))<>
 			money_done.deposit_money.CoinLoop + money_cancel.return_money.CoinLoop;
 	
-	CoinLoop = sum v:Value. (coin(v).return_last_coin.CoinLoop + coffee_money.CountMoney(0));
+	CoinLoop = sum v:Value. (coin(v).return_last_coin.CoinLoop + coffee_money.CountMoney(0) + clear_money.CoinLoop);
 
 	
 %%%%%% Init
@@ -191,8 +195,10 @@ init
     allow({heat_water, return_last_coin, return_money, deposit_money, place_cup, 
             collect, pour, water_heated, cup_placed, pour_done, coin, empty,
             show_money, set_selectable, set_empty, pressed, cancel, comm_available,
-            comm_emptydone, comm_product, comm_ready, comm_pay_money, comm_cancel_payment, comm_paid},
+            comm_emptydone, comm_product, comm_ready, comm_pay_money, comm_cancel_payment, comm_paid, 
+	comm_money_clear},
 		comm({available|check_available->comm_available, empty_ready|empty_check->comm_emptydone,
 				products_selected|get_selected_products -> comm_product,pour_ready|select_ready -> comm_ready,
-				coffee_selected|coffee_money->comm_pay_money, selection_canceled|money_cancel->comm_cancel_payment, coffee_paid|money_done->comm_paid},
+				coffee_selected|coffee_money->comm_pay_money, selection_canceled|money_cancel->comm_cancel_payment, coffee_paid|money_done->comm_paid,
+				clear_money|pre_pour->comm_money_clear},
 			StartSelection || StartEmpty || Pour || CoinLoop)); 
