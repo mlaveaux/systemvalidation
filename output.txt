@@ -1,0 +1,18 @@
+1: X1@0
+  3: Subst:false   Y@0(twoeuro)
+    16: Subst:false   Y@2(twoeuro)
+      59: Subst:false   Y@6(twoeuro)
+        171: Subst:false   Y@18(twoeuro)
+          416: Subst:false   Y@40(twoeuro)
+            811: Subst:false   Y@72(twoeuro)
+              1226: Subst:false   Y@94(twoeuro)
+                1491: Subst:false   Y@106(twoeuro)
+                  1671: Subst:false   Y@118(twoeuro)
+                    1851: Subst:false   Y@130(twoeuro)
+                      2033: Subst:false   Y@144(twoeuro)
+                        2239: Subst:false   Y@160(twoeuro)
+                          2461: Subst:false   Y@176(twoeuro)
+                            2666: Subst:false   Y@193(twoeuro)
+                              2916: Subst:false   X0@217(twoeuro)
+                                3187: Subst:false   X@229(twoeuro,twoeuro,twoeuro)
+                                  3187: Mu Cycle      X@229(twoeuro,twoeuro,twoeuro)*
