@@ -12,4 +12,4 @@ if [ ! -e ${LTS_FILENAME} ] || [ ! -e ${STATEFORMULA_FILENAME} ]; then
 fi
 
 lts2pbes --formula=${STATEFORMULA_FILENAME} ${LTS_FILENAME} ${PBES_FILENAME} &&
-pbes2bool ${PBES_FILENAME}
+pbes2bool --counter ${PBES_FILENAME}
