@@ -7,5 +7,9 @@ if [ ! -e "${MCRL2_FILENAME}" ]; then
     echo "Requires a input <file>.mcrl2 argument"; exit;
 fi
 
-mcrl22lps ${MCRL2_FILENAME} ${LPS_FILENAME} &&
-lps2lts ${LPS_FILENAME} ${LTS_FILENAME}
+if [ ${MCRL2_FILENAME} -nt $1.generated ]; then
+    mcrl22lps ${MCRL2_FILENAME} ${LPS_FILENAME} -lstack &&
+    lps2lts ${LPS_FILENAME} ${LTS_FILENAME} -D --cached 
+fi
+
+touch $1.generated
