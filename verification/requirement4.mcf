@@ -1,3 +1,4 @@
 % pressed(r2) cannot happen after another pressed(r1) without a cancel or pour inbetween for
 % r1,r2 in {ColdWater, HotWater, Coffee}.
-forall r1: Product . [true*.pressed(r1).(!cancel && !pour)*.(pressed(p_Coffee)+pressed(p_HotWater)+pressed(p_ColdWater))]false
+
+forall p:Product.[true*.pressed(p).(!pour&&!cancel&&!water_heated)*.pour]false	|| val(p==p_ColdWater)

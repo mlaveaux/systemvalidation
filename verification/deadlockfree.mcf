@@ -1,2 +1,3 @@
 % The system is deadlock free as after every action it is possible to do another.
-[(!empty(Water) && !empty(Cup))*]<true>true
+%[(!empty(Water) && !empty(Cup))*]<true*.pour_done>true
+[true*.(empty(Water) + empty(Cup)).true*.pour_done]false
