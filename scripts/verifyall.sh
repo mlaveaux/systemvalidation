@@ -3,7 +3,7 @@ if [ -z "$1" ] || [  -z "$2" ]; then
     echo "Input format is <filename>.lts <dirname>"; exit -1;
 fi
 
-FILES=$(dir $2)
+FILES=$(ls $2)
 SUFFIX=".mcf"
 
 for file in $FILES; do
