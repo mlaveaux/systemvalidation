@@ -1,0 +1,4 @@
+% The action pour will only happen if the last action is cup placed(true),
+% without a dierent action pour in between.
+
+[((!cup_placed(true))*.pour)+(true*.pour.(!cup_placed(true))*.pour)]false

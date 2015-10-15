@@ -1,0 +1,4 @@
+% For all pressed(r) actions that are not followed by an action pour or cancel,
+% there will not happen any actions collect(cs) where cs is not needed for r.
+
+forall p:Product.forall r:Resource.([true*.pressed(p).(!pour && !cancel)*.collect(r) && val(!(r in list_of_resources(p)))]false)
