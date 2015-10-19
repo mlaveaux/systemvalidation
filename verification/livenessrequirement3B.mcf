@@ -1,0 +1,4 @@
+% If there does not exist a pressed(r) such that between this action and
+% a current coin(v) action there are no actions pour or cancel, then a re-
+% turn last coin will follow.
+[(forall r:Resource.(!empty(r)||val(!(r in list_of_resources(p_HotWater)))))*.pour]mu X.( [!set_selectable(p_HotWater,true) && forall v:Value.!coin(v) && (forall r:Resource.(!empty(r)||val(!(r in list_of_resources(p_HotWater)))))]X &&<true>true)
