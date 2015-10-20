@@ -114,7 +114,7 @@ act
 proc
 	%%%%%% Product handling component
 	% placing the cup
-	PlaceCup = cup_placed(false).place_cup.PlaceCup + cup_placed(true);
+	PlaceCup = cup_placed(false).place_cup.cup_placed(true) + cup_placed(true);
 	
 	% heating water
 	HeatWater = heat_water.water_heated;
