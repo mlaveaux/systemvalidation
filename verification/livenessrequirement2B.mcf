@@ -1,0 +1,4 @@
+% If there does not exist a pressed(r) such that between this action and
+% a current coin(v) action there are no actions pour or cancel, then a re-
+% turn last coin will follow.
+[(empty(Milk))*.pressed(p_Milk)]mu X.( [!set_selectable(p_Milk,true) && forall v:Value.!coin(v)]X &&<true>true)

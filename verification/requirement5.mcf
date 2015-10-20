@@ -1,4 +1,4 @@
 % The action pour will only happen after the last coin(v) causes the target
 % amount to be reached exactly, without a dierent action pour in between.
 
-[true*.comm_pay_money]nu X(n:Nat=0).(forall v:Value.([coin(v)]X(n+value(v))) && [!exists c:Value.coin(c)]X(n) && ((val( n != 100)) && <(!pour)*.pour>false))
+[true*.comm_pay_money]nu X(n:Int=0,l:Nat=0).(forall v:Value.(<true>true && [coin(v)]X(n+value(v),value(v))) && [return_last_coin]X((n-l),0)&& [!return_last_coin && !exists c:Value.coin(c)]X(n,l) && ((val( n != 100)) || <(!pour)*.pour>false))
