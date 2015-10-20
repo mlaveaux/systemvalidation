@@ -11,7 +11,7 @@ for file in $FILES; do
         *".mcf"*)
             FILE=$file
             FILE=${FILE%$SUFFIX}
-            sh ./$(dirname $0)/verify.sh $1 $2/$FILE
+            sh ./$(dirname $0)/verify.sh $1 $2/$FILE $3
         ;;
     esac
 done

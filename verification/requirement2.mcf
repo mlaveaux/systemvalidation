@@ -1,4 +1,2 @@
-% If there does not exist a pressed(r) such that between this action and
-% a current coin(v) action there are no actions pour or cancel, then a re-
-% turn last coin will follow.
-forall v:Value.[(forall p:Product.!pressed(p)*)+(true*.(pour+cancel).((forall p:Product.!pressed(p)*))).coin(v)]mu X.( [!return_last_coin]X &&<true>true)
+% If no selection has been made yet, the machine will return any money put in the machine.
+forall v:Value.[(forall p:Product.!pressed(p)*)+(true*.(pour+comm_cancel_payment).((forall p:Product.!pressed(p)*)))][coin(v)]mu X.( [!return_last_coin]X && <true>true)
