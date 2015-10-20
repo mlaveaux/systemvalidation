@@ -9,7 +9,7 @@ fi
 
 if [ ${MCRL2_FILENAME} -nt $1.generated ]; then
     mcrl22lps ${MCRL2_FILENAME} ${LPS_FILENAME} -lstack &&
-    lps2lts ${LPS_FILENAME} ${LTS_FILENAME} -D --cached 
+    lps2lts ${LPS_FILENAME} ${LTS_FILENAME} -D --cached &&
+	touch $1.generated
 fi
 
-touch $1.generated
