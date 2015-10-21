@@ -1,0 +1,3 @@
+% 
+
+[true*.pressed(p_Coffee).(!cancel && !collect(CoffeeBean))*.pour]false && [true*.pressed(p_Milk).(!cancel && !collect(Milk))*.pour]false && [true*.pressed(p_Sugar).(!cancel && !collect(Sugar))*.pour]false
