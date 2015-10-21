@@ -1,3 +1,2 @@
 % The action return money will follow the action cancel.
-
 [true*.cancel]mu X.([!return_money]X && <true>true)
