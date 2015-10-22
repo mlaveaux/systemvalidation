@@ -8,3 +8,4 @@
 						(<!return_money>true && <return_money>true && [!return_money]X)
 						||([return_money]false && <true>true && [exists v:Value.coin(v).return_last_coin]Y && [forall v:Value.!coin(v)]X))) 
 
+

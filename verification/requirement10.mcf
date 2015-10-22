@@ -1,4 +1,3 @@
 % The action cancel can not happen after the action pour without any action
 % pressed(r) in between.
-
 forall p:Product.[true*.pour.(!cancel).pressed(p)]false 

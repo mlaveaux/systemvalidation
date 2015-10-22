@@ -1,6 +1,7 @@
 % If there does not exist a pressed(r) such that between this action and
 % a current coin(v) action there are no actions pour or cancel, then a re-
 % turn last coin will follow.
+
 ([(!empty(Sugar))*.pressed(p_Coffee)]mu X.nu Y.( 
 	(<set_selectable(p_Sugar,true)>true && [!set_selectable(p_Sugar,true) && forall v:Value.!coin(v)]false )
 	||(<set_selectable(p_Sugar,true)>true && <!set_selectable(p_Sugar,true) && forall v:Value.!coin(v)>true && [!set_selectable(p_Sugar,true) && forall v:Value.!coin(v)]X )
@@ -20,3 +21,4 @@
 	(<set_selectable(p_Milk,true)>true && <!set_selectable(p_Milk,true) && forall v:Value.!coin(v)>true && [!set_selectable(p_Milk,true) && forall v:Value.!coin(v)]X )
 	||([set_selectable(p_Milk,true)]false && [forall v:Value.!coin(v)]X && [exists v:Value.coin(v).return_last_coin]Y&&<true>true)
 ))
+
