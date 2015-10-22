@@ -1,0 +1,5 @@
+([true*.pressed(p_Coffee).(!cancel && !pour && !collect(CoffeeBean))*.deposit_money]mu X.nu Y.(
+	((<collect(CoffeeBean)>true && [!collect(CoffeeBean) && forall v:Value.!coin(v)]false )
+		||(exists r:Resource.(<collect(r)>true && val(r!=CoffeeBean) && [forall r2:Resource.!collect(r2) && forall v:Value.!coin(v)]false && [collect(r)]X))
+		||([collect(CoffeeBean)]false && <true>true &&[exists v:Value.coin(v).return_last_coin]Y && [forall v:Value.!coin(v)]X))
+	&& [pour]false)) 

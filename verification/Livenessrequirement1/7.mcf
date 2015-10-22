@@ -1,0 +1,6 @@
+forall p:Product.(
+	([true*.pressed(p)]mu X.nu Y.( 
+		(<pour>true && [!pour && forall v:Value.!coin(v)]false )
+		||([pour]false && <true>true &&[exists v:Value.coin(v).return_last_coin]Y && [forall v:Value.!coin(v) && !cancel]X))
+	)
+)

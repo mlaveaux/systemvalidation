@@ -1,0 +1,4 @@
+!([true*.pressed(p_Milk).(!cancel && !pour && !collect(Milk))*.deposit_money]mu X.nu Y.(
+	((exists r:Resource.(<collect(r)>true && val(r!=Milk) && [forall r2:Resource.!collect(r2) && forall v:Value.!coin(v)]false && [collect(r)]X))
+		||([collect(Milk)]false && <true>true &&[exists v:Value.coin(v).return_last_coin]Y && [forall v:Value.!coin(v)]X))
+	&& [pour]false)) 

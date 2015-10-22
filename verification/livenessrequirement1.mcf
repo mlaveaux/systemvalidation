@@ -1,3 +1,42 @@
 % 
+([true*.pressed(p_Coffee).(!cancel && !pour && !collect(CoffeeBean))*.deposit_money]mu X.nu Y.(
+	((<collect(CoffeeBean)>true && [!collect(CoffeeBean) && forall v:Value.!coin(v)]false )
+		||(exists r:Resource.(<collect(r)>true && val(r!=CoffeeBean) && [forall r2:Resource.!collect(r2) && forall v:Value.!coin(v)]false && [collect(r)]X))
+		||([collect(CoffeeBean)]false && <true>true &&[exists v:Value.coin(v).return_last_coin]Y && [forall v:Value.!coin(v)]X))
+	&& [pour]false)) 
+&&!([true*.pressed(p_Coffee).(!cancel && !pour && !collect(CoffeeBean))*.deposit_money]mu X.nu Y.(
+	((exists r:Resource.(<collect(r)>true && val(r!=CoffeeBean) && [forall r2:Resource.!collect(r2) && forall v:Value.!coin(v)]false && [collect(r)]X))
+		||([collect(CoffeeBean)]false && <true>true &&[exists v:Value.coin(v).return_last_coin]Y && [forall v:Value.!coin(v)]X))
+	&& [pour]false)) 
 
-[true*.pressed(p_Coffee).(!cancel && !collect(CoffeeBean))*.pour]false && [true*.pressed(p_Milk).(!cancel && !collect(Milk))*.pour]false && [true*.pressed(p_Sugar).(!cancel && !collect(Sugar))*.pour]false
+	
+&&([true*.pressed(p_Milk).(!cancel && !pour && !collect(Milk))*.deposit_money]mu X.nu Y.(
+	((<collect(Milk)>true && [!collect(Milk) && forall v:Value.!coin(v)]false )
+		||(exists r:Resource.(<collect(r)>true && val(r!=Milk) && [forall r2:Resource.!collect(r2) && forall v:Value.!coin(v)]false && [collect(r)]X))
+		||([collect(Milk)]false && <true>true &&[exists v:Value.coin(v).return_last_coin]Y && [forall v:Value.!coin(v)]X))
+	&& [pour]false))
+&&!([true*.pressed(p_Milk).(!cancel && !pour && !collect(Milk))*.deposit_money]mu X.nu Y.(
+	((exists r:Resource.(<collect(r)>true && val(r!=Milk) && [forall r2:Resource.!collect(r2) && forall v:Value.!coin(v)]false && [collect(r)]X))
+		||([collect(Milk)]false && <true>true &&[exists v:Value.coin(v).return_last_coin]Y && [forall v:Value.!coin(v)]X))
+	&& [pour]false)) 
+
+&&([true*.pressed(p_Sugar).(!cancel && !pour && !collect(Sugar))*.deposit_money]mu X.nu Y.(
+	((<collect(Sugar)>true && [!collect(Sugar) && forall v:Value.!coin(v)]false )
+		||(exists r:Resource.(<collect(r)>true && val(r!=Sugar) && [forall r2:Resource.!collect(r2) && forall v:Value.!coin(v)]false && [collect(r)]X))
+		||([collect(Sugar)]false && <true>true &&[exists v:Value.coin(v).return_last_coin]Y && [forall v:Value.!coin(v)]X))
+	&& [pour]false) )
+&&!([true*.pressed(p_Sugar).(!cancel && !pour && !collect(Sugar))*.deposit_money]mu X.nu Y.(
+	((exists r:Resource.(<collect(r)>true && val(r!=Sugar) && [forall r2:Resource.!collect(r2) && forall v:Value.!coin(v)]false && [collect(r)]X))
+		||([collect(Sugar)]false && <true>true &&[exists v:Value.coin(v).return_last_coin]Y && [forall v:Value.!coin(v)]X))
+	&& [pour]false)) 
+
+
+&& forall p:Product.(
+	([true*.pressed(p)]mu X.nu Y.( 
+		(<pour>true && [!pour && forall v:Value.!coin(v)]false )
+		||([pour]false && <true>true &&[exists v:Value.coin(v).return_last_coin]Y && [forall v:Value.!coin(v) && !cancel]X))
+	)
+	&& !([true*.pressed(p)]mu X.nu Y.( 
+			([pour]false && <true>true &&[exists v:Value.coin(v).return_last_coin]Y && [forall v:Value.!coin(v) && !cancel]X))
+		)	
+)
