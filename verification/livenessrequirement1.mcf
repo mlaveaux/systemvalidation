@@ -1,11 +1,11 @@
 % 
 forall p:Product.forall r:Resource.(val(!(r in list_of_resources(p)) || r==Cup || r==Water ) || ([true*.pressed(p).(!cancel && !pour && !collect(r))*.deposit_money]mu X.nu Y.(
 	((<collect(r)>true && [!collect(r) && forall v:Value.!coin(v)]false )
-		||(exists r:Resource.(<collect(r)>true && val(r!=r) && [forall r2:Resource.!collect(r2) && forall v:Value.!coin(v)]false && [collect(r)]X))
+		||(exists r1:Resource.(<collect(r1)>true && val(r1!=r) && [forall r2:Resource.!collect(r2) && forall v:Value.!coin(v)]false && [collect(r1)]X))
 		||([collect(r)]false && <true>true &&[exists v:Value.coin(v).return_last_coin]Y && [forall v:Value.!coin(v)]X))
 	&& [pour]false)) 
 &&!([true*.pressed(p).(!cancel && !pour && !collect(r))*.deposit_money]mu X.nu Y.(
-	((exists r:Resource.(<collect(r)>true && val(r!=r) && [forall r2:Resource.!collect(r2) && forall v:Value.!coin(v)]false && [collect(r)]X))
+	((exists r1:Resource.(<collect(r1)>true && val(r1!=r) && [forall r2:Resource.!collect(r2) && forall v:Value.!coin(v)]false && [collect(r1)]X))
 		||([collect(r)]false && <true>true &&[exists v:Value.coin(v).return_last_coin]Y && [forall v:Value.!coin(v)]X))
 	&& [pour]false)) 
 )
