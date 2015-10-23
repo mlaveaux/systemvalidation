@@ -1,5 +1,0 @@
-([(!empty(Milk))*.pressed(p_Coffee)]mu X.nu Y.( 
-	(<set_selectable(p_Milk,true)>true && [!set_selectable(p_Milk,true) && forall v:Value.!coin(v)]false )
-	||(<set_selectable(p_Milk,true)>true && <!set_selectable(p_Milk,true) && forall v:Value.!coin(v)>true && [!set_selectable(p_Milk,true) && forall v:Value.!coin(v)]X )
-	||([set_selectable(p_Milk,true)]false && [forall v:Value.!coin(v)]X && [exists v:Value.coin(v).return_last_coin]Y&&<true>true)
-))

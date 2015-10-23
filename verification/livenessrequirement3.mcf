@@ -1,34 +1,12 @@
 % If there does not exist a pressed(r) such that between this action and
 % a current coin(v) action there are no actions pour or cancel, then a re-
 % turn last coin will follow.
-[(forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_HotWater)))))*.pour_done] mu X.nu Y.(
-		(<set_selectable(p_HotWater,true)>true && [!set_selectable(p_HotWater,true) && forall v:Value.!coin(v)]false)
-		||(<set_selectable(p_HotWater,true)>true && <!set_selectable(p_HotWater,true) && forall v:Value.!coin(v) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_HotWater))))>true && [!set_selectable(p_HotWater,true) && forall v:Value.!coin(v) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_HotWater))))]X)
-		||([set_selectable(p_HotWater,true)]false && [!set_selectable(p_HotWater,true) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_HotWater)))) && forall v:Value.!coin(v)]X && [exists v:Value.coin(v).return_last_coin]Y && <true>true) )
-
-&&!([(forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_HotWater)))))*.pour_done] mu X.nu Y.( 
-		(<set_selectable(p_HotWater,true)>true && <!set_selectable(p_HotWater,true) && forall v:Value.!coin(v) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_HotWater))))>true && [!set_selectable(p_HotWater,true) && forall v:Value.!coin(v) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_HotWater))))]X)
-		||([set_selectable(p_HotWater,true)]false && [!set_selectable(p_HotWater,true) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_HotWater)))) && forall v:Value.!coin(v)]X && [exists v:Value.coin(v).return_last_coin]Y && <true>true) )
+forall p:Product.(val(p==p_Milk ||p==p_Sugar) || ([(forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p)))))*.pour_done] mu X.nu Y.(
+		(<set_selectable(p,true)>true && [!set_selectable(p,true) && forall v:Value.!coin(v)]false)
+		||(<set_selectable(p,true)>true && <!set_selectable(p,true) && forall v:Value.!coin(v) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p))))>true && [!set_selectable(p,true) && forall v:Value.!coin(v) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p))))]X)
+		||([set_selectable(p,true)]false && [!set_selectable(p,true) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p)))) && forall v:Value.!coin(v)]X && [exists v:Value.coin(v).return_last_coin]Y && <true>true) )
 )
-
-&&[(forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_Coffee)))))*.pour_done] mu X.nu Y.(
-		(<set_selectable(p_Coffee,true)>true && [!set_selectable(p_Coffee,true) && forall v:Value.!coin(v)]false)
-		||(<set_selectable(p_Coffee,true)>true && <!set_selectable(p_Coffee,true) && forall v:Value.!coin(v) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_Coffee))))>true && [!set_selectable(p_Coffee,true) && forall v:Value.!coin(v) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_Coffee))))]X)
-		||([set_selectable(p_Coffee,true)]false && [!set_selectable(p_Coffee,true) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_Coffee)))) && forall v:Value.!coin(v)]X && [exists v:Value.coin(v).return_last_coin]Y && <true>true) )
-
-&&!([(forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_Coffee)))))*.pour_done] mu X.nu Y.( 
-		(<set_selectable(p_Coffee,true)>true && <!set_selectable(p_Coffee,true) && forall v:Value.!coin(v) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_Coffee))))>true && [!set_selectable(p_Coffee,true) && forall v:Value.!coin(v) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_Coffee))))]X)
-		||([set_selectable(p_Coffee,true)]false && [!set_selectable(p_Coffee,true) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_Coffee)))) && forall v:Value.!coin(v)]X && [exists v:Value.coin(v).return_last_coin]Y && <true>true) )
-)
-
-
-&&[(forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_ColdWater)))))*.pour_done] mu X.nu Y.(
-		(<set_selectable(p_ColdWater,true)>true && [!set_selectable(p_ColdWater,true) && forall v:Value.!coin(v)]false)
-		||(<set_selectable(p_ColdWater,true)>true && <!set_selectable(p_ColdWater,true) && forall v:Value.!coin(v) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_ColdWater))))>true && [!set_selectable(p_ColdWater,true) && forall v:Value.!coin(v) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_ColdWater))))]X)
-		||([set_selectable(p_ColdWater,true)]false && [!set_selectable(p_ColdWater,true) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_ColdWater)))) && forall v:Value.!coin(v)]X && [exists v:Value.coin(v).return_last_coin]Y && <true>true) )
-
-&&!([(forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_ColdWater)))))*.pour_done] mu X.nu Y.( 
-		(<set_selectable(p_ColdWater,true)>true && <!set_selectable(p_ColdWater,true) && forall v:Value.!coin(v) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_ColdWater))))>true && [!set_selectable(p_ColdWater,true) && forall v:Value.!coin(v) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_ColdWater))))]X)
-		||([set_selectable(p_ColdWater,true)]false && [!set_selectable(p_ColdWater,true) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p_ColdWater)))) && forall v:Value.!coin(v)]X && [exists v:Value.coin(v).return_last_coin]Y && <true>true) )
-)
-		
+&&!([(forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p)))))*.pour_done] mu X.nu Y.( 
+		(<set_selectable(p,true)>true && <!set_selectable(p,true) && forall v:Value.!coin(v) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p))))>true && [!set_selectable(p,true) && forall v:Value.!coin(v) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p))))]X)
+		||([set_selectable(p,true)]false && [!set_selectable(p,true) && forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p)))) && forall v:Value.!coin(v)]X && [exists v:Value.coin(v).return_last_coin]Y && <true>true) )
+))
