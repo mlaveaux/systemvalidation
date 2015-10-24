@@ -1,0 +1,5 @@
+% After the action empty(r), the action set empty(r; true) will follow.
+
+forall r:Resource.[true*.empty(r)]mu X.nu Y.(
+(<set_empty(r,true)>true && [!set_empty(r,true) && forall v:Value.!coin(v)]false)
+|| (([set_empty(r,true)]false || <!set_empty(r,true) && forall v:Value.!coin(v)>true) && [forall v:Value.coin(v).return_last_coin]Y && [forall v:Value.!coin(v) && !set_empty(r,true)]X && <true>true))

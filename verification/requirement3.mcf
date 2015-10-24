@@ -1,8 +1,11 @@
-% pressed(r2) cannot happen after another pressed(r1) without a cancel or pour inbetween for
-% r1,r2 in {ColdWater, HotWater, Coffee}.
-[true*.pressed(p_Coffee).(!comm_pay_money).comm_pay_money]
-	nu X(n:Nat=0).(
-		forall v:Value.([coin(v)]X(n+value(v))) && 
-		[!exists c:Value.coin(c)]X(n) && 
-		(val(n <= 100) || mu Y.([!return_last_coin]Y && <true>true))
-	)
+% The action pour will only happen after the last coin(v) causes the target
+% amount to be reached exactly, without a different action pour in between.
+[true*.comm_pay_money]
+	nu X(n:Int=0, l:Nat=0).
+	(forall v:Value.( [coin(v)]X(n+value(v),value(v))) && 
+					  [return_last_coin]X(n-l,0) && 
+					  [!deposit_money && !return_last_coin && !comm_cancel_payment && !exists c:Value.coin(c)]X(n,l) && 
+	(val(n != 100) || [deposit_money]true) && 
+	(val(n == 100) || [deposit_money]false)) &&
+				
+[true*.deposit_money.!pour*.comm_ready]false && [true*.deposit_money]<true*.pour>true

@@ -1,4 +1,0 @@
-% After the action set empty(r1; true), set selectable(r2; false) will follow for
-% all r2 that need r1 and no set selectable(r2; true) will happen as long as
-% set empty(r1; false) has not happened.
-forall p: Product.forall r:Resource.([true*.set_empty(r,true).(!set_empty(r,false))*.set_selectable(p,true)]false || val(!(r in list_of_resources(p))))

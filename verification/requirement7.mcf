@@ -1,8 +1,3 @@
-% For all pressed(r) actions that are not followed by an action pour or cancel,
-% there will not happen any actions collect(cs) where cs is not needed for r.
-forall p:Product.forall p2:Product.forall p3:Product.forall r:Resource.([(true*.(pour + cancel)
-.(!pour && !cancel && forall prod:Product.!pressed(prod))+(!pour && !cancel && forall prod:Product.!pressed(prod))*)
-.pressed(p).(!pour && !cancel && forall prod:Product.!pressed(prod))*.pressed(p2)*
-.(!pour && !cancel && forall prod:Product.!pressed(prod))*.pressed(p3)*
-.(!pour && !cancel && forall prod:Product.!pressed(prod))*.collect(r) 
-&& val(!((r in list_of_resources(p)) || (r in list_of_resources(p2)) || (r in list_of_resources(p3))))]false)
+% The action cancel can not happen after the action pour without any action
+% pressed(r) in between.
+forall p:Product.[true*.pour.(!pressed(p)).cancel]false 

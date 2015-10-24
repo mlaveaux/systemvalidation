@@ -1,4 +1,4 @@
-% If no selection has been made yet, the machine will return any money put in the machine.
-forall v:Value.
-	[(forall p:Product.!pressed(p)*)+(true*.(pour+comm_cancel_payment).((forall p:Product.!pressed(p)*)))]
-	[coin(v)]mu X.( [!return_last_coin]X && <true>true)
+% pressed(r2) cannot happen after another pressed(r1) without a cancel or pour inbetween for
+% r1,r2 in {ColdWater, HotWater, Coffee}.
+
+forall p:Product.[true*.pressed(p).(!pour&&!cancel&&!water_heated)*.pour]false	|| val(p==p_ColdWater)

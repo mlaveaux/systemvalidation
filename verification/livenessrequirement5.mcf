@@ -1,0 +1,8 @@
+% pressed(r2) cannot happen after another pressed(r1) without a cancel or pour inbetween for
+% r1,r2 in {ColdWater, HotWater, Coffee}.
+[true*.pressed(p_Coffee).(!comm_pay_money).comm_pay_money]
+	nu X(n:Nat=0).(
+		forall v:Value.([coin(v)]X(n+value(v))) && 
+		[!exists c:Value.coin(c)]X(n) && 
+		(val(n <= 100) || mu Y.([!return_last_coin]Y && <true>true))
+	)

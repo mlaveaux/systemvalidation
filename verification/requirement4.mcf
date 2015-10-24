@@ -1,4 +1,4 @@
-% pressed(r2) cannot happen after another pressed(r1) without a cancel or pour inbetween for
-% r1,r2 in {ColdWater, HotWater, Coffee}.
+% The action pour will only happen if the last action is cup placed(true),
+% without a dierent action pour in between.
 
-forall p:Product.[true*.pressed(p).(!pour&&!cancel&&!water_heated)*.pour]false	|| val(p==p_ColdWater)
+[((!cup_placed(true))*.pour)+(true*.pour.(!cup_placed(true))*.pour)]false
