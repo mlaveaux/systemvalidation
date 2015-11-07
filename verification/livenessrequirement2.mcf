@@ -3,7 +3,7 @@
 % turn last coin will follow.
 
 forall p:Product.forall r:Resource.(val(p==p_HotWater || p==p_ColdWater || p==p_Coffee || !(r in list_of_resources(p))) || ([(!empty(r))*.pressed(p_Coffee)]mu X.nu Y.(
-[!set_selectable(p,true) && forall v:Value.!coin(v) && !return_last_coin]X && [exists v:Value.coin(v) + return_last_coin]Y
+[!set_selectable(p,true) && forall v:Value.!coin(v) && !return_last_coin]X && <true>true && [exists v:Value.coin(v) + return_last_coin]Y
 )))
 %forall p:Product.forall r:Resource.(val(p==p_HotWater || p==p_ColdWater || p==p_Coffee || !(r in list_of_resources(p))) || ([(!empty(r))*.pressed(p_Coffee)]mu X.nu Y.( 
 %	(<set_selectable(p,true)>true && [!set_selectable(p,true) && forall v:Value.!coin(v)]false )

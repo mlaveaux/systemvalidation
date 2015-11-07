@@ -1,6 +1,6 @@
 % 
 forall p:Product.forall r:Resource.(val(!(r in list_of_resources(p)) || r==Cup || r==Water ) || ([true*.pressed(p).(!cancel && !pour && !collect(r))*.deposit_money]mu X.nu Y.(
-	[!collect(r) && forall v:Value.!coin(v) && !return_last_coin]X && [exists v:Value.coin(v)+return_last_coin]Y
+	[!collect(r) && forall v:Value.!coin(v) && !return_last_coin]X && <true>true && [exists v:Value.coin(v)+return_last_coin]Y
 )
 ))
 

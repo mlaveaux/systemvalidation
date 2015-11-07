@@ -1,4 +1,4 @@
 % If no selection has been made yet, the machine will return any money put in the machine.
 forall v:Value.
-	[(forall p:Product.!pressed(p)*)+(true*.(pour+comm_cancel_payment).((forall p:Product.!pressed(p)*)))]
+	[(forall p:Product.!pressed(p)*)+(true*.(pour+cancel_payment).((forall p:Product.!pressed(p)*)))]
 	[coin(v)]mu X.( [!return_last_coin]X && <true>true)
