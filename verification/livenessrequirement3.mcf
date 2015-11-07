@@ -2,7 +2,7 @@
 % a current coin(v) action there are no actions pour or cancel, then a re-
 % turn last coin will follow.
 
-forall p:Product.(val(p==p_Milk ||p==p_Sugar) || ([(forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p)))))*.pour_done] mu X.nu Y.(
+forall p:Product.(val(p==p_Milk ||p==p_Sugar) || ([(forall r:Resource.(!empty(r) || val(!(r in list_of_resources(p)))))*.pour] mu X.nu Y.(
 [!set_selectable(p,true) && forall v:Value.!coin(v) && !return_last_coin && (forall r:Resource.!empty(r) || val(!(r in list_of_resources(p))))]X && [exists v:Value.coin(v) + return_last_coin]Y
 )))
 
