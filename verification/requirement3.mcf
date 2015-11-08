@@ -13,7 +13,7 @@
 [true*.pressed(p_Coffee)]nu X(n:Int=0, l:Nat=0).(
 					 exists v:Value.(<coin(v)>X(n+value(v),value(v))) || 
 					 <return_last_coin>X(n-l,0) ||
-					 <cancel>true ||
+					 <cancel + return_money>true ||
 					 val(n == 100) ||
 					 (val(n != 100) && <(forall w:Value.!coin(w) && !return_last_coin && !cancel)*.pour>false)
 					 )
