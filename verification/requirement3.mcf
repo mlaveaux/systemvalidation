@@ -11,7 +11,7 @@
 %[true*.deposit_money.!pour*.comm_ready]false && [true*.deposit_money]<true*.pour>true
 
 [true*.pressed(p_Coffee)]nu X(n:Int=0, l:Nat=0).(
-	forall v:Value.( <coin(v)>X(n+value(v),value(v))) || 
+					 exists v:Value.(<coin(v)>X(n+value(v),value(v))) || 
 					 <return_last_coin>X(n-l,0) ||
 					 <cancel>true ||
 					 val(n == 100) ||
